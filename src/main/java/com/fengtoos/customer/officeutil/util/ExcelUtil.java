@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 public class ExcelUtil {
 
 //    public static void main(String[] args) throws Exception {
-//        Result rs = ExcelUtil.readTable(new File("F:\\fengtoos\\外包\\20200604\\模板生成\\data.xlsx"), 6);
+//        Result rs = ExcelUtil.readTable(new File("C:\\Users\\feng\\Desktop\\data.xlsx"), 6);
 //        ExcelUtil.createDocument(rs.getData(), "F:\\template\\模板.xlsx");
 //        String str = "1、3号点位于史家庄村、封家坝村、马蹄湾社区交界处，为本权属交界线的起点，向南方向738.58米到达13号点。";
 //        String str1 = "10、69号点位于马蹄湾社区、嘉陵江、十天高速公路交界处，为本权属交界线的终点。";
 //        System.out.println(str.split("号点").length);
+//        System.out.println(Arrays.toString(str.split("号点")));
+//        System.out.println(str.substring(str.indexOf("到达") + 2, str.lastIndexOf("号点")));
 //        System.out.println(str1.substring(0, str1.indexOf("、")));
 //        System.out.println(str1.substring(str1.indexOf("、") + 1, str1.indexOf("号点")));
 //        System.out.println(str1.substring(str1.indexOf("点") + 1));
+//        String test = str1;
+//        if(test.indexOf("终点") == -1){
+//            if(str.split("号点").length > 2){
+//                System.out.println(test.substring(0, test.indexOf("、"))); //序号
+//                System.out.println(test.substring(test.indexOf("、") + 1, test.indexOf("号点"))); //起点
+//                System.out.println(test.substring(test.indexOf("点") + 1, test.indexOf("到达")));//正文
+//                System.out.println(test.substring(test.indexOf("到达") + 2, test.lastIndexOf("号点")));
+//            }
+//        } else {
+//            System.out.println(test.substring(0, test.indexOf("、"))); //序号
+//            System.out.println(test.substring(test.indexOf("、") + 1, test.indexOf("号点"))); //起点
+//            System.out.println(test.substring(test.indexOf("点") + 1, test.indexOf("。")));
+//            System.out.println("终点");
+//        }
 //    }
 
     //通过对单元格遍历的形式来获取信息 ，这里要判断单元格的类型才可以取出值
@@ -40,7 +56,7 @@ public class ExcelUtil {
         boolean isSuccess = true;
 
         //每一行
-        int z = 0;
+        int z = 0, xlen = 1;
         for (ArrayList<Object> item : list) {
             //每一个单元格
             for (int i = 0; i < item.size(); i++) {
@@ -60,18 +76,32 @@ public class ExcelUtil {
                                     //标题
                                     if(z == 0){
                                         newo.add("序号");
-                                        newo.add("点号");
+                                        newo.add("起点号");
+                                        newo.add("终点号");
                                         newo.add(s);
                                     } else {
                                         if(s.split("号点").length == 2 && s.indexOf("终点") == -1){
                                             throw new StringIndexOutOfBoundsException();
                                         }
-                                        newo.add(s.substring(0, s.indexOf("、")));
-                                        newo.add(s.substring(s.indexOf("、") + 1, s.indexOf("号点")));
-                                        newo.add(s.substring(s.indexOf("点") + 1));
+
+                                        if(s.indexOf("终点") == -1){
+                                            if(s.split("号点").length > 2){
+                                                newo.add(s.substring(0, s.indexOf("、")));
+                                                newo.add(s.substring(s.indexOf("、") + 1, s.indexOf("号点")));
+                                                newo.add(s.substring(s.indexOf("到达") + 2, s.lastIndexOf("号点")));
+                                                newo.add(s.substring(s.indexOf("点") + 1, s.indexOf("到达")));
+                                            }
+                                        } else {
+                                            if(s.split("号点").length == 2){
+                                                newo.add(s.substring(0, s.indexOf("、")));
+                                                newo.add(s.substring(s.indexOf("、") + 1, s.indexOf("号点")));
+                                                newo.add("");
+                                                newo.add(s.substring(s.indexOf("点") + 1, s.indexOf("。")));
+                                            }
+                                        }
                                     }
                                 } catch (StringIndexOutOfBoundsException e){
-                                    msg = "宗地号：" + newo.get(0) + "\n数据：" + s + "\n不符合<、>,<号点>转换要求！！！";
+                                    msg = "第" + xlen +  "行\n宗地号：" + newo.get(0) + "\n数据：" + s + "\n不符合<、>,<号点>,<。中文句号>转换要求！！！";
                                     System.out.println(msg);
                                     isSuccess = false;
                                     break;
@@ -85,6 +115,7 @@ public class ExcelUtil {
                 }
             }
             z++;
+            xlen++;
         }
         wb.close();
         return Result.normal(msg, isSuccess, rs);
