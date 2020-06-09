@@ -44,7 +44,7 @@ public class ExcelUtil {
 //    }
 
     //通过对单元格遍历的形式来获取信息 ，这里要判断单元格的类型才可以取出值
-    public static Result readTable(File file, Integer index) throws Exception {
+    public static Result readTable(File file, Integer index) throws IOException {
         InputStream ips = new FileInputStream(file);
         XSSFWorkbook wb = new XSSFWorkbook(ips);
         XSSFSheet sheet = wb.getSheetAt(0);
@@ -128,6 +128,7 @@ public class ExcelUtil {
         XSSFSheet sheet = workbook.createSheet();
         //创建工作表的行
         Map<Integer, Integer> maxWidth = new HashMap<Integer, Integer>();
+        CellStyle style = getCellStyle(workbook);
         for (int i = 0, rlen = list.size(); i < rlen; i++) {
             XSSFRow row = sheet.createRow(i);
             ArrayList<Object> cells = list.get(i);
@@ -144,7 +145,7 @@ public class ExcelUtil {
                     maxWidth.put(j, Math.max(x, maxWidth.get(j)));
                 }
                 cell.setCellValue(value);
-                cell.setCellStyle(setStyle(workbook));
+                cell.setCellStyle(style);
             }
         }
 
@@ -180,7 +181,7 @@ public class ExcelUtil {
         return list;
     }
 
-    private static XSSFCellStyle setStyle(XSSFWorkbook workbook) {
+    private static XSSFCellStyle getCellStyle(XSSFWorkbook workbook) {
         XSSFCellStyle style = workbook.createCellStyle();
         style.setBorderTop(BorderStyle.THIN);//上边框
         style.setBorderBottom(BorderStyle.THIN);//下边框

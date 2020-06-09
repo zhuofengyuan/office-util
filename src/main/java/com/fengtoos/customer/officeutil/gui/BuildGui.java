@@ -109,16 +109,21 @@ public class BuildGui {//实现监听器的接口
 //        word2pdf = new JButton("转换PDF");
         register.addActionListener(e -> {
             try {
+                long t1 = System.currentTimeMillis();
                 String out = wordOutChooser.getSelectedFile().getPath()+ "\\" + dataChooser.getSelectedFile().getName();
                 Result rs = ExcelUtil.readTable(dataChooser.getSelectedFile(), Integer.parseInt(splitString.getText()));
                 if(rs.isSuccess()){
                     ExcelUtil.createDocument(rs.getData(), out);
                     saveProp();
                 }
-                JOptionPane.showMessageDialog(frame, rs.getMsg());
-            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(frame, "本次耗时：" + ((System.currentTimeMillis() - t1) / 1000) + "秒\n操作结果：" + rs.getMsg());
+            } catch (IOException exception) {
                 exception.printStackTrace();
-                JOptionPane.showMessageDialog(frame, "拆分失败，请检查excel单元格格式或数据换行");
+                if(exception instanceof FileNotFoundException){
+                    JOptionPane.showMessageDialog(frame, "拆分失败，请检查导入的excel数据是否存在");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "拆分失败，请检查excel单元格格式或数据换行");
+                }
             }
         });
 

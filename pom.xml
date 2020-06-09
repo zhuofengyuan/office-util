@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.fengtoos.customer</groupId>
     <artifactId>office-util</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>office-util</name>
     <description>Demo project for Spring Boot</description>
 
@@ -49,6 +49,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
         </dependency>
     </dependencies>
 
